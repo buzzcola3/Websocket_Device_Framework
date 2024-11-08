@@ -1,7 +1,7 @@
 import asyncio
 import websockets
 
-from websocket_device_interface.datatypes import WsRequest, WsRequestList
+from Websocket_Device_Framework.websocket_device_interface.datatypes import WsRequest, WsRequestList
 
 
 # WebSocket handler for receiving messages

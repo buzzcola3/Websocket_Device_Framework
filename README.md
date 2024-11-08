@@ -21,12 +21,12 @@ The goal is to quickly adapt any device or tool, regardless of its underlying pr
 
 Create a `device_specific` folder with your device's specific logic. You can find an [example folder here](#). This folder will contain all the necessary code to interface with your particular device.
 
-### 2. Run `main.py`
+### 2. Run `main.py` with the -m flag from the project root
 
 Once the `device_specific` folder is in place, simply run the `main.py` script to start the WebSocket server.
 
 ```bash
-python main.py
+python -m Websocket_Device_Framework.main
 ```
 
 ### 3. Connect via WebSocket

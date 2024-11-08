@@ -12,7 +12,7 @@ if IS_MICROPYTHON:
     from device_specific.setup_wifi import connect_wifi # type: ignore
     connect_wifi()
 else:
-    from websocket_device_interface.desktop_specific.interface_handler import handler as wsInterfaceHandler
+    from Websocket_Device_Framework.websocket_device_interface.desktop_specific.interface_handler import handler as wsInterfaceHandler
 
 
 
@@ -23,6 +23,6 @@ async def main():
 
 
 # Run the asyncio event loop and start the server
-if __name__ == "__main__":
-    asyncio.run(main())
+
+asyncio.run(main())
 

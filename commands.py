@@ -10,7 +10,7 @@ except ImportError:
 
 # Device-specific imports
 from device_specific.device import getDeviceName, getDeviceDescription, getDeviceAvailableCommands, getDeviceAvailableNodes
-from small_tools import get_file_as_string
+from Websocket_Device_Framework.small_tools import get_file_as_string
 
 def generate_uuid():
     if IS_MICROPYTHON:

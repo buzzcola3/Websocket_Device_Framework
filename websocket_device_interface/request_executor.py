@@ -1,7 +1,7 @@
 import asyncio
 import json
 
-from commands import command_devinfo, command_ping
+from Websocket_Device_Framework.commands import command_devinfo, command_ping
 from device_specific.device import runDeviceCommand
 
 async def handle_execute(wsRequestList): 

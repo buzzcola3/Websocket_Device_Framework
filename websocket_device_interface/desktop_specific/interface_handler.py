@@ -2,9 +2,9 @@
 import asyncio
 import websockets
 
-from websocket_device_interface.datatypes import WsRequestList
-from websocket_device_interface.desktop_specific.request_transceiver import handle_send, handle_receive
-from websocket_device_interface.request_executor import handle_execute
+from Websocket_Device_Framework.websocket_device_interface.datatypes import WsRequestList
+from Websocket_Device_Framework.websocket_device_interface.desktop_specific.request_transceiver import handle_send, handle_receive
+from Websocket_Device_Framework.websocket_device_interface.request_executor import handle_execute
 
 
 wsRequestList = WsRequestList(max_requests = 64)
