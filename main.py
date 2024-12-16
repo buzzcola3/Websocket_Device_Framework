@@ -18,11 +18,9 @@ else:
 
 # Start the WebSocket server
 async def main():
-    await wsInterfaceHandler(80)
-    pass
+    await wsInterfaceHandler()
 
 
 # Run the asyncio event loop and start the server
 
 asyncio.run(main())
-
