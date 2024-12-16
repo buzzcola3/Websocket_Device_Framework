@@ -17,7 +17,9 @@ async def handle_execute(wsRequestList):
                         request.executing = True
 
                         try:
-                            request.request = json.loads(request.request)
+                            print("heh")
+                            request.request = json.loads(request.request) if isinstance(request.request, str) else request.request
+                            print("huh")
 
                             if request.request["COMMAND"] == "GET_STATUS":
                                 uuid = request.request["PARAMETERS"][0]
@@ -65,6 +67,7 @@ async def handle_execute(wsRequestList):
 
                             elif not request.fulfilled:
                                 response, isSuccess = await runDeviceCommand(request.request["COMMAND"], request.request["PARAMETERS"])
+                                print(response)
                                 request.set_response(response, isSuccess)
 
                                 request.executing = False

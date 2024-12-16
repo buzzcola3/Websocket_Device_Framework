@@ -7,7 +7,7 @@ from Websocket_Device_Framework.websocket_device_interface.desktop_specific.requ
 from Websocket_Device_Framework.websocket_device_interface.request_executor import handle_execute
 
 
-wsRequestList = WsRequestList(max_requests = 64)
+wsRequestList = WsRequestList(max_requests = 127)
 
 async def wsHandler(ws):
         

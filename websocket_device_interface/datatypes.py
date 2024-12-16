@@ -44,7 +44,10 @@ class WsRequestList:
         # Check if request with the same UUID already exists
         if self.get_request_by_uuid(request.uuid) is not None:
             existing_request = self.get_request_by_uuid(request.uuid)
-            existing_request.toSend = True
+            if existing_request.executing:
+                print("still executing")
+            else:
+                existing_request.toSend = True
             print("Duplicate request")
             return False  # UUID already in pending requests, do not add
 
