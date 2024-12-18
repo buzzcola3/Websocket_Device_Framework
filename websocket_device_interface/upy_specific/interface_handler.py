@@ -10,18 +10,8 @@ from websocket_device_interface.request_executor import handle_execute
 
 wsRequestList = WsRequestList(max_requests = 64)
 
-async def wsHandler():
-    while True:
-        if externalWs is not None:
-            #print("hum")
-            pass
-        await asyncio.sleep(0.1)
 
 externalWs = None
-asyncio.create_task(wsHandler())
-asyncio.create_task(handle_execute(wsRequestList))
-asyncio.create_task(handle_send(wsRequestList))
-
 
 
 
@@ -39,11 +29,19 @@ async def handler(port):
             global externalWs  # Use the global variable here
             if externalWs is None:
                 externalWs = ws  # Assign ws to externalWs
-            await handle_receive(ws, wsRequestList)
-            #await handle_send(wsRequestList)
+
+            success = handle_receive(ws, wsRequestList)
+            #TODO INSTANT ECHO
+            if success:
+                # Create a task to run handle_execute
+                asyncio.run(handle_execute(WsRequestList))
             
             # Create a task to run wsHandler with ws
-            
         
     # Start the server (assuming the app has a start method; adjust as necessary)
     app.run(port=port)
+
+async def execute_and_send(wsRequestList):
+    success = await handle_execute(wsRequestList)
+    if success:
+        await handle_send(wsRequestList)
