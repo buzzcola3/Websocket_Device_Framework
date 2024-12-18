@@ -1,23 +1,11 @@
 import asyncio
-import websockets
+import websockets.server
 import socket
 
 from Websocket_Device_Framework.websocket_device_interface.datatypes import WsRequestList
 from Websocket_Device_Framework.websocket_device_interface.request_transceiver import handle_receive
-from Websocket_Device_Framework.websocket_device_interface.request_transceiver import execute_and_send
+from Websocket_Device_Framework.websocket_device_interface.desktop_specific.interface_handler import websocket_receive
 
-ws_request_list = WsRequestList(max_requests=127)
-
-async def wsHandler(ws):
-    try:
-        await handle_receive(ws, ws_request_list)
-            
-    except websockets.ConnectionClosedOK:
-        print("Connection closed normally")
-    except websockets.ConnectionClosedError:
-        print("Connection closed with an error")
-    except Exception as e:
-        print(f"Error in handler: {e}")
 
 # Function to find the first available port starting from port 80
 def find_free_port(starting_port=80, max_port=512):
@@ -36,6 +24,6 @@ async def handler():
     free_port = find_free_port()
 
     # Start WebSocket server on the found port
-    async with websockets.serve(wsHandler, "localhost", free_port):
+    async with websockets.serve(lambda websocket, path: websocket_receive(websocket, handle_receive), "localhost", free_port):
         print(f"Server started on localhost:{free_port}")
-        await asyncio.Future()  # Run indefinitely
+        await asyncio.get_running_loop().create_future()  # Run indefinitely

@@ -102,3 +102,4 @@ class WsRequestList:
     def __repr__(self):
         return "WsRequestList({}/{} requests)".format(len(self.requests), self.max_requests)
 
+

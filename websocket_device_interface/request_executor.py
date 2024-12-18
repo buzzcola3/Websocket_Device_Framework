@@ -3,7 +3,7 @@ import json
 from Websocket_Device_Framework.commands import command_devinfo, command_ping
 from device_specific.device import runDeviceCommand
 
-async def handle_execute(wsRequestList):
+async def handle_execute(ws, wsRequestList):
     """Continuously processes each request in the WsRequestList by executing its command."""
     print("Starting handle_execute...")
 
@@ -56,6 +56,5 @@ async def handle_execute(wsRequestList):
         result = False
         # If any error occurs during the execution
         print(f"Error in handle_execute: {e}.")
-
     return result
 

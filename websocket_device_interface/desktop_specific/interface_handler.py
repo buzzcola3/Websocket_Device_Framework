@@ -1,44 +1,30 @@
 import asyncio
 import websockets
-import socket
 
-
-async def websocket_receive(ws):
-    result = []
+async def websocket_receive(ws, onReceiveCallback):
+    """
+    Listens to the WebSocket and calls callback funcion on every new message
+    """
     try:
-        print("here1")
-        # Try to gather all messages that are currently available
-        while True:
-            try:
-                # Receive a message from the websocket if it's available
-                message = await asyncio.wait_for(ws.recv(), timeout=0.1)  # Adjust timeout as needed
-                result.append(message)
-                print("rx")
-            except asyncio.TimeoutError:
-                # No more messages in the buffer, exit the loop
-                break
-        
+        # Continuously listen for messages from the WebSocket
+        async for message in ws:
+            print(f"Message received: {message}")
+            await onReceiveCallback(ws, message)
     except websockets.ConnectionClosedOK:
-        print("Connection closed normally for receiving.")
-        
-    except websockets.ConnectionClosedError:
-        print("Connection closed with an error during receiving. Retrying...")
-    
+        print("Connection closed normally.")
+    except websockets.ConnectionClosedError as e:
+        print(f"Connection closed with an error: Code={e.code}, Reason={e.reason}")
     except Exception as e:
-        print(f"Error in receiving: {e}. Retrying...")
-
-    return result
+        print(f"Unexpected error in websocket_listener: {e}")
 
 async def websocket_send(ws, message):
     result = False
     try:
-        print(f"sent: {message}")
         await ws.send(message)
         result = True
-    except websockets.ConnectionClosedOK:
-        print("Connection closed normally for sending.")
-    except websockets.ConnectionClosedError:
-        print("Connection closed with an error during sending. Retrying...")
+        print(f"Message sent successfully: {message}")
+    except websockets.ConnectionClosed as e:
+        print(f"WebSocket connection closed: Code={e.code}, Reason={e.reason}")
     except Exception as e:
-        print(f"Error in sending: {e}.")
+        print(f"Unexpected error: {e}")
     return result
