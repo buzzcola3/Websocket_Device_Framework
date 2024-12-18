@@ -7,7 +7,7 @@ except:
     IS_MICROPYTHON = False
 
 if IS_MICROPYTHON:
-    from websocket_device_interface.upy_specific.websocket_init import handler
+    from Websocket_Device_Framework.websocket_device_interface.upy_specific.websocket_init import handler
     
     from device_specific.setup_wifi import connect_wifi # type: ignore
     connect_wifi()

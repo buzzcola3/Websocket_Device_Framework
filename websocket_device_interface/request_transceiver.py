@@ -16,8 +16,10 @@ else:
 ws_request_list = WsRequestList(max_requests = 64)
 
 async def handle_receive(ws, message):
+    print("handleRX")
     ws_request = WsRequest(message)
     ws_request_list.add_request(ws_request)
+    print("starting execute task")
     asyncio.create_task(execute_and_send(ws))
 
 
