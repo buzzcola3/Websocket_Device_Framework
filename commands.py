@@ -1,6 +1,6 @@
 import json
 import os
-from jsonrpc import dispatcher
+from Websocket_Device_Framework.jsonrpc import dispatcher
 
 try:
     import machine  # type: ignore

@@ -1,7 +1,7 @@
 import asyncio
 from Websocket_Device_Framework.websocket_device_interface.datatypes import WsRequest, WsRequestList
 import Websocket_Device_Framework.commands
-from jsonrpc import JSONRPCResponseManager, dispatcher
+from Websocket_Device_Framework.jsonrpc import JSONRPCResponseManager, dispatcher
 
 try:
     import machine # type: ignore
