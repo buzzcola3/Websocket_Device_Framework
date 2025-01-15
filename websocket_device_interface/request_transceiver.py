@@ -1,6 +1,8 @@
 import asyncio
 from Websocket_Device_Framework.websocket_device_interface.datatypes import WsRequest, WsRequestList
 from Websocket_Device_Framework.websocket_device_interface.request_executor import handle_execute
+from Websocket_Device_Framework.commands import command_devinfo, command_ping
+from jsonrpc import JSONRPCResponseManager, dispatcher
 
 try:
     import machine # type: ignore
@@ -15,19 +17,23 @@ else:
 
 ws_request_list = WsRequestList(max_requests = 64)
 
+@dispatcher.add_method
+def DEVINFO(**kwargs):
+    return command_devinfo()
+
+
 async def handle_receive(ws, message):
     print("handleRX")
-    ws_request = WsRequest(message)
-    ws_request_list.add_request(ws_request)
-    print("starting execute task")
-    asyncio.create_task(execute_and_send(ws))
+    if(message == "ping"):
+        await handle_send(ws, "pong")
+        return
+
+    response = JSONRPCResponseManager.handle(message, dispatcher)
+    asyncio.create_task(handle_send(ws, response.json))
 
 
-async def handle_send(ws):
-    for request in ws_request_list.requests:
-        if request.toSend:
-            request.toSend = False
-            await websocket_send(ws, request.rawResponse)
+async def handle_send(ws, message):
+    await websocket_send(ws, message)
 
         
 
