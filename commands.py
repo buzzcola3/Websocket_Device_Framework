@@ -10,7 +10,7 @@ except ImportError:
     IS_MICROPYTHON = False
 
 # Device-specific imports
-from device_specific.device import __DEVICE_NAME, __DEVICE_DESCRIPTION, __DEVICE_AVAILABLE_COMMANDS, __DEVICE_AVAILABLE_NODES
+from device_specific.device import __DEVICE_NAME, __DEVICE_DESCRIPTION, __DEVICE_AVAILABLE_NODES
 from Websocket_Device_Framework.small_tools import get_file_as_string
 
 def generate_uuid():
@@ -44,7 +44,6 @@ def DEVINFO(**kwargs):
         "UNIQUE_ID": get_unique_id(),
         "DEVICE_NAME": __DEVICE_NAME,
         "DEVICE_DESCRIPTION": __DEVICE_DESCRIPTION,
-        "DEVICE_AVAILABLE_COMMANDS": __DEVICE_AVAILABLE_COMMANDS,
         "DEVICE_AVAILABLE_NODES": __DEVICE_AVAILABLE_NODES,
         "DEVICE_ICON_SVG": get_file_as_string("./device_specific/device_icon.svg"),
     })
