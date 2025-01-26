@@ -44,7 +44,7 @@ def DEVINFO(**kwargs):
         "UNIQUE_ID": get_unique_id(),
         "DEVICE_NAME": __DEVICE_NAME,
         "DEVICE_DESCRIPTION": __DEVICE_DESCRIPTION,
-        "DEVICE_AVAILABLE_NODES": __DEVICE_AVAILABLE_NODES,
+        "DEVICE_AVAILABLE_NODES": __DEVICE_AVAILABLE_NODES.to_json(),
         "DEVICE_ICON_SVG": get_file_as_string("./device_specific/device_icon.svg"),
     })
 
