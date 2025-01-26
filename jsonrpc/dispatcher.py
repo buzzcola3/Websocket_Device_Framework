@@ -7,7 +7,7 @@ import functools
 try:
     from collections.abc import MutableMapping
 except ImportError:
-    from collections import MutableMapping
+    from collections.collections import MutableMapping
 
 
 class Dispatcher(MutableMapping):

@@ -1,7 +1,5 @@
 """ Utility functions for package."""
-from abc import ABCMeta, abstractmethod
 import datetime
-import decimal
 import inspect
 import json
 import sys
@@ -9,14 +7,13 @@ import sys
 from . import six
 
 
-class JSONSerializable(six.with_metaclass(ABCMeta, object)):
+class JSONSerializable(object):
 
     """ Common functionality for json serializable objects."""
 
     serialize = staticmethod(json.dumps)
     deserialize = staticmethod(json.loads)
 
-    @abstractmethod
     def json(self):
         raise NotImplementedError()
 
@@ -30,28 +27,25 @@ class JSONSerializable(six.with_metaclass(ABCMeta, object)):
         return cls(**data)
 
 
-class DatetimeDecimalEncoder(json.JSONEncoder):
+class DatetimeDecimalEncoder:
 
     """ Encoder for datetime and decimal serialization.
 
-    Usage: json.dumps(object, cls=DatetimeDecimalEncoder)
-    NOTE: _iterencode does not work
-
+    Usage: json.dumps(object, default=DatetimeDecimalEncoder().default)
     """
 
     def default(self, o):
         """ Encode JSON.
 
         :return str: A JSON encoded string
-
         """
-        if isinstance(o, decimal.Decimal):
+        if isinstance(o, float):  # Assuming decimal.Decimal is replaced by float
             return float(o)
 
         if isinstance(o, (datetime.datetime, datetime.date)):
             return o.isoformat()
 
-        return json.JSONEncoder.default(self, o)
+        raise TypeError(f"Object of type {type(o).__name__} is not JSON serializable")
 
 
 def is_invalid_params_py2(func, *args, **kwargs):
@@ -95,7 +89,7 @@ def is_invalid_params_py3(func, *args, **kwargs):
     parameters = signature.parameters
 
     unexpected = set(kwargs.keys()) - set(parameters.keys())
-    if len(unexpected) > 0:
+    if (len(unexpected) > 0):
         return True
 
     params = [

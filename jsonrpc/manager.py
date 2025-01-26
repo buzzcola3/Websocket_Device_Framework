@@ -1,6 +1,7 @@
 import json
 import inspect
-import logging
+from types.types import FunctionType
+
 from .utils import is_invalid_params
 from .exceptions import (
     JSONRPCInvalidParams,
@@ -19,7 +20,6 @@ from .jsonrpc2 import (
 )
 from .jsonrpc import JSONRPCRequest
 
-logger = logging.getLogger(__name__)
 
 
 class JSONRPCResponseManager(object):
@@ -73,7 +73,16 @@ class JSONRPCResponseManager(object):
         """
         rs = request if isinstance(request, JSONRPC20BatchRequest) \
             else [request]
-        responses = [r async for r in cls._get_responses(rs, dispatcher, context) if r is not None]
+        #responses = [r async for r in cls._get_responses(rs, dispatcher, context) if r is not None]
+        #responses = [r for r in await cls._get_responses(rs, dispatcher, context) if r is not None]
+        responses = []
+        print("here11")
+        for r in await cls._get_responses(rs, dispatcher, context):
+            print("here10")
+            print(r)
+            if r is not None:
+                responses.append(r)
+        print("here12")
 
 
         # notifications
@@ -91,12 +100,13 @@ class JSONRPCResponseManager(object):
     async def _get_responses(cls, requests, dispatcher, context=None):
         """ Response to each single JSON-RPC Request.
 
-        :return iterator(JSONRPC20Response):
+        :return list(JSONRPC20Response):
 
         .. versionadded: 1.9.0
           TypeError inside the function is distinguished from Invalid Params.
 
         """
+        responses = []
         for request in requests:
             def make_response(**kwargs):
                 response = cls.RESPONSE_CLASS_MAP[request.JSONRPC_VERSION](
@@ -106,32 +116,40 @@ class JSONRPCResponseManager(object):
 
             output = None
             try:
+                print(dispatcher[request.method])
                 method = dispatcher[request.method]
             except KeyError:
                 output = make_response(error=JSONRPCMethodNotFound()._data)
             else:
                 try:
+                    print("here")
                     kwargs = request.kwargs
+                    print("here7")
                     if context is not None:
+                        print("here3")
                         context_arg = dispatcher.context_arg_for_method.get(
                             request.method)
                         if context_arg:
+                            print("here4")
                             context["request"] = request
                             kwargs[context_arg] = context
-                    if inspect.iscoroutinefunction(method):
+                    if isinstance(method, FunctionType) and hasattr(method, 'func_code') and method.func_code.co_flags & 0x80:  # is async
                         result = await method(*request.args, **kwargs)
                     else:
                         result = method(*request.args, **kwargs)
+                        print(result)
+                        print("here6")
                 except JSONRPCDispatchException as e:
                     output = make_response(error=e.error._data)
                 except Exception as e:
+                    print("here2")
                     data = {
                         "type": e.__class__.__name__,
                         "args": e.args,
                         "message": str(e),
                     }
 
-                    logger.exception("API Exception: {0}".format(data))
+                    print("API Exception: {0}".format(data))
 
                     if isinstance(e, TypeError) and is_invalid_params(
                             method, *request.args, **request.kwargs):
@@ -141,7 +159,11 @@ class JSONRPCResponseManager(object):
                         output = make_response(
                             error=JSONRPCServerError(data=data)._data)
                 else:
+                    print("here8")
                     output = make_response(result=result)
             finally:
                 if not request.is_notification:
-                    yield output
+                    print("here9")
+                    print(output)
+                    responses.append(output)
+        return responses

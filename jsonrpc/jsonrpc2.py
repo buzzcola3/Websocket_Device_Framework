@@ -1,6 +1,6 @@
-﻿from . import six
-import json
 
+import json
+from . import six
 from .exceptions import JSONRPCError, JSONRPCInvalidRequestException
 from .base import JSONRPCBaseRequest, JSONRPCBaseResponse
 
