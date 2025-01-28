@@ -48,3 +48,6 @@ def DEVINFO(**kwargs):
         "DEVICE_ICON_SVG": get_file_as_string("./device_specific/device_icon.svg"),
     })
 
+@dispatcher.add_method
+def ping(**kwargs):
+    return "pong"
