@@ -1,6 +1,4 @@
 import json
-import inspect
-from types.types import FunctionType
 
 from .utils import is_invalid_params
 from .exceptions import (
@@ -21,6 +19,12 @@ from .jsonrpc2 import (
 from .jsonrpc import JSONRPCRequest
 
 
+def _f():
+    pass
+
+def is_async_function(func):
+    ASYNC_FLAG = 0x80  # Flag for 'coroutine function'
+    return bool(func.__code__.co_flags & ASYNC_FLAG)
 
 class JSONRPCResponseManager(object):
 
@@ -41,6 +45,7 @@ class JSONRPCResponseManager(object):
         "1.0": JSONRPC10Response,
         "2.0": JSONRPC20Response,
     }
+
 
     @classmethod
     async def handle(cls, request_str, dispatcher, context=None):
@@ -76,14 +81,10 @@ class JSONRPCResponseManager(object):
         #responses = [r async for r in cls._get_responses(rs, dispatcher, context) if r is not None]
         #responses = [r for r in await cls._get_responses(rs, dispatcher, context) if r is not None]
         responses = []
-        print("here11")
         for r in await cls._get_responses(rs, dispatcher, context):
-            print("here10")
             print(r)
             if r is not None:
                 responses.append(r)
-        print("here12")
-
 
         # notifications
         if not responses:
@@ -116,33 +117,30 @@ class JSONRPCResponseManager(object):
 
             output = None
             try:
-                print(dispatcher[request.method])
                 method = dispatcher[request.method]
             except KeyError:
                 output = make_response(error=JSONRPCMethodNotFound()._data)
             else:
                 try:
-                    print("here")
                     kwargs = request.kwargs
-                    print("here7")
                     if context is not None:
-                        print("here3")
                         context_arg = dispatcher.context_arg_for_method.get(
                             request.method)
                         if context_arg:
-                            print("here4")
                             context["request"] = request
                             kwargs[context_arg] = context
-                    if isinstance(method, FunctionType) and hasattr(method, 'func_code') and method.func_code.co_flags & 0x80:  # is async
+
+                    #method is async, await, if not, just call it
+                    if isinstance(method, type(_f)) and is_async_function(method):
                         result = await method(*request.args, **kwargs)
+                        print("async")
                     else:
+                        print("not async")
                         result = method(*request.args, **kwargs)
                         print(result)
-                        print("here6")
                 except JSONRPCDispatchException as e:
                     output = make_response(error=e.error._data)
                 except Exception as e:
-                    print("here2")
                     data = {
                         "type": e.__class__.__name__,
                         "args": e.args,
@@ -159,11 +157,8 @@ class JSONRPCResponseManager(object):
                         output = make_response(
                             error=JSONRPCServerError(data=data)._data)
                 else:
-                    print("here8")
                     output = make_response(result=result)
             finally:
                 if not request.is_notification:
-                    print("here9")
-                    print(output)
                     responses.append(output)
         return responses

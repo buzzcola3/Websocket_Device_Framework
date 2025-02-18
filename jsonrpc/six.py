@@ -1,7 +1,6 @@
 """Utilities for writing code that runs on Python 3"""
 
 import sys
-from types.types import MethodType
 
 __author__ = "Benjamin Peterson <benjamin@python.org>"
 __version__ = "1.4.1"
@@ -14,6 +13,9 @@ binary_type = bytes
 
 MAXSIZE = sys.maxsize
 
+class _C:
+    def _m(self):
+        pass
 
 class MovedAttribute(object):
 
@@ -64,7 +66,7 @@ def get_unbound_function(unbound):
     return unbound
 
 
-create_bound_method = MethodType
+create_bound_method = type(_C()._m)
 
 
 def iterkeys(d, **kw):
