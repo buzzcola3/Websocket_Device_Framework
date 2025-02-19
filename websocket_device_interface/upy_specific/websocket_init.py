@@ -23,6 +23,7 @@ from Websocket_Device_Framework.websocket_device_interface.upy_specific.interfac
 
 async def handler():
     free_port = 80
+    print("handler")
     
     app = Microdot()
     

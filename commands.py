@@ -14,6 +14,7 @@
 
 import json
 import os
+from Websocket_Device_Framework.jsonrpc import dispatcher
 
 try:
     import machine  # type: ignore
@@ -23,7 +24,7 @@ except ImportError:
     IS_MICROPYTHON = False
 
 # Device-specific imports
-from device_specific.device import getDeviceName, getDeviceDescription, getDeviceAvailableCommands, getDeviceAvailableNodes
+from device_specific.device import __DEVICE_NAME, __DEVICE_DESCRIPTION, __DEVICE_AVAILABLE_NODES
 from Websocket_Device_Framework.small_tools import get_file_as_string
 
 def generate_uuid():
@@ -51,18 +52,16 @@ def get_unique_id():
             json.dump(data, f)
         return unique_id
 
-# The command_devinfo function, now using get_unique_id for UNIQUE_ID
-def command_devinfo():    
+@dispatcher.add_method
+def DEVINFO(**kwargs):  
     return json.dumps({
         "UNIQUE_ID": get_unique_id(),
-        "DEVICE_NAME": getDeviceName(),
-        "DEVICE_DESCRIPTION": getDeviceDescription(),
-        "DEVICE_AVAILABLE_COMMANDS": getDeviceAvailableCommands(),
-        "DEVICE_AVAILABLE_NODES": getDeviceAvailableNodes(),
+        "DEVICE_NAME": __DEVICE_NAME,
+        "DEVICE_DESCRIPTION": __DEVICE_DESCRIPTION,
+        "DEVICE_AVAILABLE_NODES": __DEVICE_AVAILABLE_NODES.to_json(),
         "DEVICE_ICON_SVG": get_file_as_string("./device_specific/device_icon.svg"),
     })
 
-def command_ping():
-    print("PINGED")
-    return "OK"
-
+@dispatcher.add_method
+def ping(**kwargs):
+    return "pong"
